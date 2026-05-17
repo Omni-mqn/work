@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentech - Investment Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #00e676;
+            --primary-dark: #00c853;
+            --secondary: #00b248;
+            --dark: #0a0f0a;
+            --darker: #050a05;
+            --glass: rgba(0, 230, 118, 0.05);
+            --border: rgba(0, 230, 118, 0.2);
+            --glow: rgba(0, 230, 118, 0.3);
+            --danger: #ff5252;
+            --warning: #ffaa00;
+            --paystack: #09a5db;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(180deg, var(--darker) 0%, #0a1f0a 50%, var(--darker) 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .wave {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(0, 230, 118, 0.08) 0%, transparent 70%);
+            animation: wave 15s infinite ease-in-out;
+        }
+
+        .wave:nth-child(2) {
+            animation-delay: -5s;
+            background: radial-gradient(ellipse at center, rgba(0, 178, 72, 0.06) 0%, transparent 70%);
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: translate(-30%, -30%) rotate(0deg); }
+            50% { transform: translate(10%, 10%) rotate(180deg); }
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 5%;
+            background: rgba(5, 10, 5, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--primary);
+            cursor: pointer;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .logo-icon::before {
+            content: 'M';
+            color: var(--dark);
+            font-size: 1.3rem;
+            font-weight: 900;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #888;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .user-menu {
+            display: none;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .balance-display {
+            background: rgba(0, 230, 118, 0.1);
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            box-shadow: 0 4px 15px rgba(0, 230, 118, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: var(--dark);
+        }
+
+        .btn-glow {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--dark);
+            box-shadow: 0 0 20px var(--glow);
+            animation: pulse 2s infinite;
+        }
+
+        .btn-paystack {
+            background: linear-gradient(135deg, var(--paystack), #0674a8);
+            color: white;
+            box-shadow: 0 4px 15px rgba(9, 165, 219, 0.3);
+        }
+
+        .btn-paystack:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(9, 165, 219, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #b71c1c);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px var(--glow); }
+            50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(0, 230, 118, 0.2); }
+        }
+
+        .section {
+            display: none;
+            padding: 2rem 5%;
+            max-width: 1000px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .auth-box {
+            background: rgba(0, 20, 0, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .auth-box h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .auth-switch a {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .earning-board {
+            background: linear-gradient(180deg, rgba(0, 230, 118, 0.1) 0%, rgba(0, 20, 0, 0.8) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 230, 118, 0.2);
+        }
+
+        .board-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .board-header h2 {
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .plans-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        .plans-table th {
+            background: rgba(0, 230, 118, 0.15);
+            padding: 1rem;
+            text-align: left;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .plans-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(0, 230, 118, 0.1);
+            color: #ccc;
+        }
+
+        .plans-table tr:hover td {
+            background: rgba(0, 230, 118, 0.05);
+            color: white;
+        }
+
+        .plan-name {
+            font-weight: 700;
+            color: white;
+        }
+
+        .highlight-row {
+            background: rgba(0, 230, 118, 0.08) !important;
+        }
+
+        .highlight-row td {
+            color: var(--primary) !important;
+            font-weight: 700;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card {
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .info-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-size: 1rem;
+        }
+
+        .info-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin: 0.3rem 0;
+        }
+
+        .info-card .highlight {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .topup-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .topup-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .topup-header h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .topup-header p {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        .topup-card {
+            background: rgba(0, 20, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .amount-selector {
+            margin-bottom: 1.5rem;
+        }
+
+        .amount-selector label {
+            display: block;
+            color: #888;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .preset-amounts {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+            margin-bottom: 1rem;
+        }
+
+        .preset-btn {
+            background: rgba(0, 230, 118, 0.08);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0, 230, 118, 0.15);
+        }
+
+        .preset-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--dark);
+            border-color: transparent;
+            box-shadow: 0 0 15px var(--glow);
+        }
+
+        .custom-amount {
+            position: relative;
+        }
+
+        .custom-amount span {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .amount-input {
+            width: 100%;
+            padding: 0.9rem 1rem 0.9rem 2.2rem;
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .amount-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 230, 118, 0.1);
+        }
+
+        .min-notice {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            color: var(--warning);
+            font-size: 0.8rem;
+        }
+
+        /* Paystack Payment Section */
+        .paystack-card {
+            background: linear-gradient(135deg, rgba(9, 165, 219, 0.1), rgba(6, 116, 168, 0.05));
+            border: 1px solid rgba(9, 165, 219, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .paystack-card h3 {
+            color: var(--paystack);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .paystack-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .paystack-amount-display {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--paystack);
+        }
+
+        .paystack-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, var(--paystack), #0674a8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(9, 165, 219, 0.3);
+        }
+
+        .paystack-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(9, 165, 219, 0.4);
+        }
+
+        .approval-section {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(9, 165, 219, 0.2);
+        }
+
+        .approval-section p {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #0088cc;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .telegram-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3);
+        }
+
+        .action-area {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            color: #555;
+            font-size: 0.85rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .investment-options {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .investment-options h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--glow);
+            margin-bottom: 0.5rem;
+        }
+
+        .investment-options .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .invest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .invest-card {
+            background: linear-gradient(180deg, rgba(0, 230, 118, 0.08) 0%, rgba(0, 20, 0, 0.6) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .invest-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0, 230, 118, 0.15);
+        }
+
+        .invest-card.active-plan {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--glow);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 20px var(--glow); }
+            50% { box-shadow: 0 0 40px var(--glow), 0 0 60px rgba(0, 230, 118, 0.2); }
+        }
+
+        .invest-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary);
+            color: var(--dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .invest-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .invest-price {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin: 1rem 0;
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .invest-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-box {
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 0.8rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .invest-btn {
+            width: 100%;
+            padding: 1rem;
+            margin-top: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .invested-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .invest-card.invested .invested-overlay {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .invested-overlay .checkmark {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .invested-overlay h3 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .invested-overlay p {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .invested-overlay .earning-timer {
+            margin-top: 1rem;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .my-investments {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .my-investments h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px var(--glow);
+        }
+
+        .investment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .investment-item {
+            background: rgba(0, 20, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .investment-item:hover {
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .investment-info h4 {
+            color: white;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .investment-info span {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .investment-stats {
+            text-align: right;
+        }
+
+        .investment-stats .amount {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .investment-stats .profit {
+            color: var(--warning);
+            font-size: 0.9rem;
+            margin-top: 0.2rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            margin-top: 0.8rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+
+        .history-section {
+            margin-top: 2rem;
+        }
+
+        .history-section h3 {
+            margin-bottom: 0.8rem;
+            color: #888;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .history-list {
+            background: rgba(0, 20, 0, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.2rem;
+            border-bottom: 1px solid rgba(0, 230, 118, 0.1);
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-item .info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+            color: white;
+        }
+
+        .history-item .info span {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: rgba(255, 170, 0, 0.15);
+            color: var(--warning);
+        }
+
+        .status-approved {
+            background: rgba(0, 230, 118, 0.15);
+            color: var(--primary);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(180deg, #0a1f0a 0%, #050a05 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px var(--glow);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal h3 {
+            margin-bottom: 0.8rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .modal p {
+            color: #aaa;
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+
+        .modal-details {
+            background: rgba(0, 230, 118, 0.05);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        .modal-details p {
+            margin: 0.5rem 0;
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .modal .btn {
+            margin-top: 1rem;
+        }
+
+        .success-animation {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .success-animation.active {
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+
+        .success-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            box-shadow: 0 0 60px var(--glow);
+            animation: successPop 0.6s ease-out;
+        }
+
+        @keyframes successPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .success-text {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .success-text h2 {
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-text p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(0, 20, 0, 0.9);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 2000;
+            font-weight: 600;
+            box-shadow: 0 0 20px var(--glow);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .preset-amounts { grid-template-columns: repeat(2, 1fr); }
+            .info-grid { grid-template-columns: 1fr; }
+            .plans-table { font-size: 0.85rem; }
+            .plans-table th, .plans-table td { padding: 0.7rem; }
+            .nav-links { gap: 1rem; }
+            .invest-grid { grid-template-columns: 1fr; }
+            .investment-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .investment-stats { text-align: left; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="wave"></div>
+        <div class="wave"></div>
+    </div>
+
+    <nav>
+        <div class="logo" onclick="showSection('dashboard')">
+            <div class="logo-icon"></div>
+            <span>MENTECH</span>
+        </div>
+        <div class="nav-links" id="navLinks">
+            <a onclick="showSection('dashboard')" class="active">Dashboard</a>
+            <button class="btn btn-primary" onclick="showSection('auth')">Sign In</button>
+        </div>
+        <div class="user-menu" id="userMenu">
+            <div class="balance-display">₦<span id="userBalance">0</span></div>
+            <button class="btn btn-outline" onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <!-- Auth Section -->
+    <div class="section active" id="authSection">
+        <div class="auth-container">
+            <div class="auth-box" id="loginBox">
+                <h2>Welcome Back</h2>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" required placeholder="Enter your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Sign In</button>
+                </form>
+                <div class="auth-switch">
+                    Don't have an account? <a onclick="toggleAuth()">Sign Up</a>
+                </div>
+            </div>
+
+            <div class="auth-box" id="registerBox" style="display: none;">
+                <h2>Join Mentech</h2>
+                <form onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" required placeholder="Enter your full name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address</label>
+                        <input type="email" required placeholder="Enter your email">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" required placeholder="Create a password" minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" required placeholder="Confirm your password">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem;">Create Account</button>
+                </form>
+                <div class="auth-switch">
+                    Already have an account? <a onclick="toggleAuth()">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div class="section" id="dashboardSection">
+        <!-- Earning Board -->
+        <div class="earning-board">
+            <div class="board-header">
+                <h2>📊 Earning Board</h2>
+            </div>
+            <table class="plans-table">
+                <thead>
+                    <tr>
+                        <th>Plans</th>
+                        <th>Price</th>
+                        <th>Daily Income</th>
+                        <th>Duration</th>
+                        <th>Total Returns</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="plan-name">WaveStart</td><td>₦3,000</td><td>₦750</td><td>30 Days</td><td>₦22,500</td></tr>
+                    <tr class="highlight-row"><td class="plan-name">WaveCore</td><td>₦6,000</td><td>₦1,500</td><td>30 Days</td><td>₦45,000</td></tr>
+                    <tr><td class="plan-name">WavePro</td><td>₦10,000</td><td>₦2,500</td><td>30 Days</td><td>₦75,000</td></tr>
+                    <tr class="highlight-row"><td class="plan-name">WaveMax</td><td>₦20,000</td><td>₦5,000</td><td>30 Days</td><td>₦150,000</td></tr>
+                    <tr><td class="plan-name">WaveElite</td><td>₦30,000</td><td>₦7,500</td><td>30 Days</td><td>₦225,000</td></tr>
+                    <tr class="highlight-row"><td class="plan-name">WaveTitan</td><td>₦50,000</td><td>₦12,500</td><td>30 Days</td><td>₦375,000</td></tr>
+                    <tr><td class="plan-name">WaveInfinity</td><td>₦100,000</td><td>₦25,000</td><td>30 Days</td><td>₦750,000</td></tr>
+                </tbody>
+            </table>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h4>🎁 Welcome Bonus</h4>
+                    <p>Welcome Bonus: <span class="highlight">₦500</span></p>
+                    <p>Daily Gift Code: <span class="highlight">5:30pm</span></p>
+                    <p>Minimum Deposit: <span class="highlight">₦3,000</span></p>
+                    <p>Minimum Withdrawal: <span class="highlight">₦500</span></p>
+                </div>
+                <div class="info-card">
+                    <h4>👥 Referral Bonuses</h4>
+                    <p>Level 1: <span class="highlight">23%</span></p>
+                    <p>Level 2: <span class="highlight">2%</span></p>
+                    <p style="margin-top: 0.8rem; color: var(--primary);">24/7 Deposit & Withdrawal</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Up Section with Paystack -->
+        <div class="topup-section">
+            <div class="topup-header">
+                <h2>💰 Top Up Balance</h2>
+                <p>Add funds to your account using Paystack. Minimum deposit: ₦3,000</p>
+            </div>
+
+            <div class="topup-card">
+                <div class="amount-selector">
+                    <label>Select Amount</label>
+                    <div class="preset-amounts">
+                        <button class="preset-btn" onclick="selectAmount(3000)">₦3K</button>
+                        <button class="preset-btn" onclick="selectAmount(6000)">₦6K</button>
+                        <button class="preset-btn" onclick="selectAmount(10000)">₦10K</button>
+                        <button class="preset-btn" onclick="selectAmount(20000)">₦20K</button>
+                        <button class="preset-btn" onclick="selectAmount(30000)">₦30K</button>
+                        <button class="preset-btn" onclick="selectAmount(50000)">₦50K</button>
+                        <button class="preset-btn" onclick="selectAmount(100000)">₦100K</button>
+                        <button class="preset-btn" onclick="selectAmount(0)">Custom</button>
+                    </div>
+                    
+                    <div class="custom-amount">
+                        <span>₦</span>
+                        <input type="number" class="amount-input" id="topupAmount" placeholder="Enter amount (min ₦3,000)" min="3000" oninput="validateAmount()">
+                    </div>
+                    <div class="min-notice">
+                        <span>⚠️</span>
+                        <span>Minimum top up amount is ₦3,000</span>
+                    </div>
+                </div>
+
+                <!-- Paystack Payment -->
+                <div class="paystack-card" id="paystackCard" style="display: none;">
+                    <h3>💳 Pay with Paystack</h3>
+                    <p>You will be redirected to Paystack to complete your payment securely.</p>
+                    <div class="paystack-amount-display" id="paystackAmount">₦0</div>
+                    <a href="https://paystack.shop/pay/jlnyhsoora" target="_blank" class="paystack-link" onclick="handlePaystackClick()">
+                        <span>🔒</span> Pay with Paystack
+                    </a>
+                    
+                    <div class="approval-section">
+                        <p>After payment, click below to request moderator approval</p>
+                        <button class="btn btn-glow" onclick="requestApproval()" style="width: 100%;">
+                            ✅ I've Paid - Request Approval
+                        </button>
+                    </div>
+                </div>
+
+                <div class="action-area" id="paystackAction">
+                    <button class="btn btn-paystack submit-btn" onclick="proceedToPaystack()">
+                        💳 Proceed to Paystack
+                    </button>
+                    
+                    <div class="divider">or</div>
+                    
+                    <div class="telegram-section">
+                        <p>Need help? Contact our moderator</p>
+                        <a href="https://t.me/+iWAo0Y__N_QxMTc0" target="_blank" class="telegram-link">
+                            <span>📱</span> Contact Moderator on Telegram
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <h3>Recent Top Ups</h3>
+                <div class="history-list" id="topupHistory">
+                    <div class="history-item">
+                        <div class="info">
+                            <h4>Top Up Request</h4>
+                            <span>May 16, 2026 • 14:30</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <span style="font-weight: 700; color: var(--primary);">₦10,000</span>
+                            <span class="status-badge status-pending">Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Investment Options -->
+        <div class="investment-options" id="investmentOptions">
+            <h2>🚀 Choose Your Investment</h2>
+            <p class="subtitle">Your balance: ₦<span id="availableBalance">0</span>. Select a plan to start earning!</p>
+            
+            <div class="invest-grid" id="investGrid">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+
+        <!-- My Active Investments -->
+        <div class="my-investments" id="myInvestments" style="display: none;">
+            <h2>📈 My Active Investments</h2>
+            <div class="investment-list" id="investmentList">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Animation -->
+    <div class="success-animation" id="successAnim">
+        <div class="success-circle">✓</div>
+        <div class="success-text">
+            <h2>Investment Successful!</h2>
+            <p>Your money is now working for you. Daily profits incoming!</p>
+        </div>
+        <button class="btn btn-primary" style="margin-top: 2rem;" onclick="closeSuccessAnim()">Awesome!</button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-icon" id="modalIcon">📨</div>
+            <h3 id="modalTitle">Request Sent!</h3>
+            <p id="modalMessage">Your request has been submitted.</p>
+            <div class="modal-details" id="modalDetails"></div>
+            <button class="btn btn-primary" onclick="closeModal()" style="margin-top: 1rem;">Got it</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        let currentUser = null;
+        let userBalance = 0;
+        let topUpRequests = [];
+        let activeInvestments = [];
+        let approvedTopUps = [];
+        let pendingAmount = 0;
+
+        const investmentPlans = [
+            { id: 'wavestart', name: 'WaveStart', price: 3000, daily: 750, total: 22500, duration: 30 },
+            { id: 'wavecore', name: 'WaveCore', price: 6000, daily: 1500, total: 45000, duration: 30 },
+            { id: 'wavepro', name: 'WavePro', price: 10000, daily: 2500, total: 75000, duration: 30 },
+            { id: 'wavemax', name: 'WaveMax', price: 20000, daily: 5000, total: 150000, duration: 30 },
+            { id: 'waveelite', name: 'WaveElite', price: 30000, daily: 7500, total: 225000, duration: 30 },
+            { id: 'wavetitan', name: 'WaveTitan', price: 50000, daily: 12500, total: 375000, duration: 30 },
+            { id: 'waveinfinity', name: 'WaveInfinity', price: 100000, daily: 25000, total: 750000, duration: 30 }
+        ];
+
+        function generateInvestmentCards() {
+            const grid = document.getElementById('investGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = investmentPlans.map(plan => `
+                <div class="invest-card" id="card-${plan.id}" data-price="${plan.price}">
+                    <div class="invested-overlay" id="overlay-${plan.id}">
+                        <div class="checkmark">✅</div>
+                        <h3>Invested!</h3>
+                        <p>Earning ₦${plan.daily.toLocaleString()} daily</p>
+                        <div class="earning-timer" id="timer-${plan.id}">₦0 earned</div>
+                    </div>
+                    ${plan.price >= 50000 ? '<div class="invest-badge">Popular</div>' : ''}
+                    <div class="invest-name">${plan.name}</div>
+                    <div class="invest-price">₦${plan.price.toLocaleString()}</div>
+                    <div class="invest-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Daily Income</div>
+                            <div class="stat-value" style="color: var(--primary);">₦${plan.daily.toLocaleString()}</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-label">Total Return</div>
+                            <div class="stat-value">₦${plan.total.toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div style="color: #888; font-size: 0.85rem; margin-bottom: 1rem;">
+                        Duration: ${plan.duration} Days • ROI: ${((plan.total/plan.price - 1) * 100).toFixed(0)}%
+                    </div>
+                    <button class="btn btn-primary invest-btn" id="btn-${plan.id}" onclick="invest('${plan.id}')">
+                        Invest Now
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            generateInvestmentCards();
+            checkAuth();
+        });
+
+        function showSection(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            
+            switch(section) {
+                case 'dashboard':
+                    if (!currentUser) {
+                        showModal('🔒', 'Authentication Required', 'Please sign in to access the dashboard.');
+                        showSection('auth');
+                        return;
+                    }
+                    document.getElementById('dashboardSection').classList.add('active');
+                    break;
+                case 'auth':
+                    document.getElementById('authSection').classList.add('active');
+                    break;
+            }
+        }
+
+        function toggleAuth() {
+            const loginBox = document.getElementById('loginBox');
+            const registerBox = document.getElementById('registerBox');
+            if (loginBox.style.display === 'none') {
+                loginBox.style.display = 'block';
+                registerBox.style.display = 'none';
+            } else {
+                loginBox.style.display = 'none';
+                registerBox.style.display = 'block';
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            currentUser = {
+                name: 'Investor',
+                email: e.target.querySelector('input[type="email"]').value,
+                balance: 0
+            };
+            updateUI();
+            showSection('dashboard');
+            showToast('Welcome to Mentech! Dashboard loaded.');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const inputs = e.target.querySelectorAll('input');
+            if (inputs[2].value !== inputs[3].value) {
+                showModal('⚠️', 'Error', 'Passwords do not match!');
+                return;
+            }
+            currentUser = {
+                name: inputs[0].value,
+                email: inputs[1].value,
+                balance: 0
+            };
+            updateUI();
+            showSection('dashboard');
+            showToast('Account created! Welcome to Mentech.');
+        }
+
+        function logout() {
+            currentUser = null;
+            userBalance = 0;
+            activeInvestments = [];
+            approvedTopUps = [];
+            updateUI();
+            showSection('auth');
+            showToast('Logged out successfully');
+        }
+
+        function updateUI() {
+            const navLinks = document.getElementById('navLinks');
+            const userMenu = document.getElementById('userMenu');
+            const balanceEl = document.getElementById('userBalance');
+            const availableBalanceEl = document.getElementById('availableBalance');
+            
+            if (currentUser) {
+                navLinks.style.display = 'none';
+                userMenu.style.display = 'flex';
+                if (balanceEl) balanceEl.textContent = userBalance.toLocaleString();
+                if (availableBalanceEl) availableBalanceEl.textContent = userBalance.toLocaleString();
+            } else {
+                navLinks.style.display = 'flex';
+                userMenu.style.display = 'none';
+            }
+        }
+
+        function checkAuth() {
+            updateUI();
+        }
+
+        function selectAmount(amount) {
+            const input = document.getElementById('topupAmount');
+            const buttons = document.querySelectorAll('.preset-btn');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            
+            if (amount === 0) {
+                input.value = '';
+                input.focus();
+            } else {
+                input.value = amount;
+                event.target.classList.add('active');
+            }
+            validateAmount();
+        }
+
+        function validateAmount() {
+            const input = document.getElementById('topupAmount');
+            const value = parseInt(input.value);
+            const buttons = document.querySelectorAll('.preset-btn');
+            const amounts = [3000, 6000, 10000, 20000, 30000, 50000, 100000, 0];
+            
+            buttons.forEach((btn, index) => {
+                if (amounts[index] === value) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
+        function proceedToPaystack() {
+            const amount = parseInt(document.getElementById('topupAmount').value);
+            
+            if (!amount || amount < 3000) {
+                showModal('⚠️', 'Invalid Amount', 'Minimum top up amount is ₦3,000. Please enter a valid amount.');
+                return;
+            }
+
+            pendingAmount = amount;
+            
+            // Show Paystack card with amount
+            document.getElementById('paystackAmount').textContent = '₦' + amount.toLocaleString();
+            document.getElementById('paystackCard').style.display = 'block';
+            document.getElementById('paystackAction').style.display = 'none';
+            
+            showToast('Review your amount and click Pay with Paystack');
+        }
+
+        function handlePaystackClick() {
+            showToast('Opening Paystack in new tab...');
+        }
+
+        function requestApproval() {
+            if (pendingAmount < 3000) {
+                showModal('⚠️', 'Error', 'Please select an amount first.');
+                return;
+            }
+
+            // Add to pending history
+            const request = {
+                id: Date.now(),
+                amount: pendingAmount,
+                date: new Date().toLocaleString(),
+                status: 'pending'
+            };
+            topUpRequests.unshift(request);
+            updateTopUpHistory();
+
+            showModal(
+                '⏳', 
+                'Approval Request Sent', 
+                `Your top-up of <strong style="color: var(--primary);">₦${pendingAmount.toLocaleString()}</strong> is pending moderator approval.`,
+                `<p><strong>Amount:</strong> ₦${pendingAmount.toLocaleString()}</p>
+                 <p><strong>Status:</strong> <span style="color: #ffaa00;">Pending Approval</span></p>
+                 <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+                 <hr style="border-color: var(--border); margin: 0.5rem 0;">
+                 <p style="color: #ffaa00; font-size: 0.85rem;">⚠️ Contact the moderator on Telegram to speed up approval.</p>`
+            );
+
+            // Reset
+            pendingAmount = 0;
+            document.getElementById('topupAmount').value = '';
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('paystackCard').style.display = 'none';
+            document.getElementById('paystackAction').style.display = 'block';
+        }
+
+        // Simulate moderator approval (for demo - in real app this would be done by moderator)
+        function simulateApproval(amount) {
+            setTimeout(() => {
+                userBalance += amount;
+                approvedTopUps.push({
+                    id: Date.now(),
+                    amount: amount,
+                    date: new Date().toLocaleString(),
+                    status: 'approved'
+                });
+                
+                updateUI();
+                updateTopUpHistory();
+                updateInvestmentButtons();
+                
+                showModal(
+                    '✅', 
+                    'Top Up Approved!', 
+                    `₦${amount.toLocaleString()} has been added to your balance.`,
+                    `<p><strong>New Balance:</strong> <span style="color: var(--primary);">₦${userBalance.toLocaleString()}</span></p>`
+                );
+                
+                showToast(`₦${amount.toLocaleString()} added to balance!`);
+            }, 3000);
+        }
+
+        function updateTopUpHistory() {
+            const historyList = document.getElementById('topupHistory');
+            const allRequests = [...approvedTopUps, ...topUpRequests];
+            
+            if (allRequests.length === 0) {
+                historyList.innerHTML = '<div class="history-item"><div class="info"><h4>No transactions yet</h4></div></div>';
+                return;
+            }
+            
+            historyList.innerHTML = allRequests.map(req => `
+                <div class="history-item">
+                    <div class="info">
+                        <h4>Top Up ${req.status === 'approved' ? 'Approved' : 'Request'}</h4>
+                        <span>${req.date}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <span style="font-weight: 700; color: var(--primary);">₦${req.amount.toLocaleString()}</span>
+                        <span class="status-badge status-${req.status}">${req.status.charAt(0).toUpperCase() + req.status.slice(1)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateInvestmentButtons() {
+            investmentPlans.forEach(plan => {
+                const btn = document.getElementById(`btn-${plan.id}`);
+                const card = document.getElementById(`card-${plan.id}`);
+                if (!btn || !card) return;
+                
+                const isInvested = activeInvestments.some(inv => inv.planId === plan.id);
+                const canAfford = userBalance >= plan.price;
+                
+                if (isInvested) {
+                    btn.textContent = '✅ Active';
+                    btn.disabled = true;
+                    btn.style.background = 'rgba(0, 230, 118, 0.2)';
+                    btn.style.color = '#00e676';
+                    card.classList.add('active-plan');
+                } else if (!canAfford) {
+                    btn.textContent = 'Insufficient Balance';
+                    btn.disabled = true;
+                    btn.style.background = 'rgba(255, 82, 82, 0.2)';
+                    btn.style.color = '#ff5252';
+                } else {
+                    btn.textContent = 'Invest Now';
+                    btn.disabled = false;
+                    btn.style.background = '';
+                    btn.style.color = '';
+                }
+            });
+        }
+
+        function invest(planId) {
+            const plan = investmentPlans.find(p => p.id === planId);
+            if (!plan) return;
+            
+            if (userBalance < plan.price) {
+                showModal('❌', 'Insufficient Balance', `You need ₦${plan.price.toLocaleString()} to invest in ${plan.name}. Please top up more.`);
+                return;
+            }
+
+            userBalance -= plan.price;
+            updateUI();
+            
+            const investment = {
+                planId: plan.id,
+                planName: plan.name,
+                amount: plan.price,
+                dailyIncome: plan.daily,
+                totalReturn: plan.total,
+                startDate: new Date(),
+                daysLeft: plan.duration,
+                earnedSoFar: 0,
+                id: Date.now()
+            };
+            activeInvestments.push(investment);
+            
+            showSuccessAnimation();
+            
+            document.getElementById('myInvestments').style.display = 'block';
+            updateInvestmentButtons();
+            renderActiveInvestments();
+            startEarningSimulation(investment);
+            
+            showToast(`Invested ₦${plan.price.toLocaleString()} in ${plan.name}!`);
+        }
+
+        function showSuccessAnimation() {
+            const anim = document.getElementById('successAnim');
+            anim.classList.add('active');
+            
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                confetti.style.background = ['#00e676', '#00c853', '#00b248', '#ffaa00'][Math.floor(Math.random() * 4)];
+                anim.appendChild(confetti);
+            }
+        }
+
+        function closeSuccessAnim() {
+            const anim = document.getElementById('successAnim');
+            anim.classList.remove('active');
+            anim.querySelectorAll('.confetti').forEach(c => c.remove());
+        }
+
+        function renderActiveInvestments() {
+            const list = document.getElementById('investmentList');
+            if (!list) return;
+            
+            if (activeInvestments.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #888; padding: 2rem;">No active investments yet</div>';
+                return;
+            }
+            
+            list.innerHTML = activeInvestments.map(inv => {
+                const progress = ((inv.duration - inv.daysLeft) / inv.duration * 100).toFixed(1);
+                return `
+                    <div class="investment-item">
+                        <div class="investment-info" style="flex: 1;">
+                            <h4>${inv.planName}</h4>
+                            <span>Started: ${inv.startDate.toLocaleDateString()} • ${inv.daysLeft} days remaining</span>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${progress}%"></div>
+                            </div>
+                        </div>
+                        <div class="investment-stats">
+                            <div class="amount">₦${inv.amount.toLocaleString()}</div>
+                            <div class="profit">+₦${inv.earnedSoFar.toLocaleString()} earned</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function startEarningSimulation(investment) {
+            const interval = setInterval(() => {
+                const inv = activeInvestments.find(i => i.id === investment.id);
+                if (!inv || inv.daysLeft <= 0) {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                inv.earnedSoFar += inv.dailyIncome;
+                inv.daysLeft--;
+                
+                const timer = document.getElementById(`timer-${inv.planId}`);
+                if (timer) {
+                    timer.textContent = `₦${inv.earnedSoFar.toLocaleString()} earned`;
+                }
+                
+                renderActiveInvestments();
+                
+                if (inv.daysLeft <= 0) {
+                    showToast(`${inv.planName} investment completed! Total earned: ₦${inv.totalReturn.toLocaleString()}`);
+                }
+            }, 3000);
+            
+            setTimeout(() => {
+                const card = document.getElementById(`card-${investment.planId}`);
+                if (card) card.classList.add('invested');
+            }, 500);
+        }
+
+        function copyToClipboard(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                showToast('Account number copied!');
+                setTimeout(() => {
+                    btn.textContent = 'Copy';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function showModal(icon, title, message, details = '') {
+            document.getElementById('modalIcon').textContent = icon;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            document.getElementById('modalDetails').innerHTML = details;
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('modal')) closeModal();
+        });
+    </script>
+</body>
+</html>
